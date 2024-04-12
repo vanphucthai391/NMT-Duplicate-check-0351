@@ -58,6 +58,7 @@ namespace JigQuick
 
         private void frmInut_Load(object sender, EventArgs e)
         {
+            txtProduct2.Enabled = false;
             txtProduct.Select();
             lblCounter.Visible = true;
             if (lblModel.Text == "BMD_0351")
@@ -103,53 +104,95 @@ namespace JigQuick
         }
         private void txtProduct_KeyDown(object sender, KeyEventArgs e)
         {
-            //if (ckReturn.Checked == true)
-            //{
-            //    targetProcessCombined = "EN2-LVT";
-            //}
-            //else
-            targetProcessCombined = "EN2-LVT,MOTOR";
+            //targetProcessCombined = "EN2-LVT,MOTOR";
             if (e.KeyCode != Keys.Enter) return;
-            model = lblModel.Text;
-            //txtDataReceive.Clear();
-            //ImportDataToDB();
-            headTableThisMonth = model.ToLower() + DateTime.Today.ToString("yyyyMM");
-            headTableLastMonth = model.ToLower() + ((VBS.Right(DateTime.Today.ToString("yyyyMM"), 2) != "01") ?
-                (long.Parse(DateTime.Today.ToString("yyyyMM")) - 1).ToString() : (long.Parse(DateTime.Today.ToString("yyyy")) - 1).ToString() + "12");
-            TfSQL tf = new TfSQL();
-            try
-            {
-                if (!tf.CheckTableExist(headTableLastMonth))
-                {
-                    headTableLastMonth = headTableThisMonth;
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
+            //model = lblModel.Text;
+            //headTableThisMonth = model.ToLower() + DateTime.Today.ToString("yyyyMM");
+            //headTableLastMonth = model.ToLower() + ((VBS.Right(DateTime.Today.ToString("yyyyMM"), 2) != "01") ?
+            //    (long.Parse(DateTime.Today.ToString("yyyyMM")) - 1).ToString() : (long.Parse(DateTime.Today.ToString("yyyy")) - 1).ToString() + "12");
+            //TfSQL tf = new TfSQL();
+            //try
+            //{
+            //    if (!tf.CheckTableExist(headTableLastMonth))
+            //    {
+            //        headTableLastMonth = headTableThisMonth;
+            //    }
+            //}
+            //catch (Exception ex)
+            //{
+            //    MessageBox.Show(ex.Message);
+            //}
             if (txtProduct.Text == string.Empty) return;
             if (txtProduct.ReadOnly == true) return;
-            if (duplicate) return;
-            char part = txtProduct.Text[4];
-            if (part == 'H')
+            if (checkPositionBarcode(txtProduct, 'H'))
             {
-                bool res = ntrsScanProcess(txtProduct.Text, pnlResult, "'EN2-LVT', 'MOTOR'", txtResultDetail);
-                if (!res) return;
-
+                noticeOK(pnlResult, txtProduct, lblResult);
+                txtProduct.Enabled = false;
+                txtProduct2.Enabled = true;
+                txtProduct2.Select();
             }
-            else if (part == 'M')
+            else {
+                noticeNG(pnlResult, txtProduct);
+            };
+
+            //if (duplicate) return;
+            //char part = txtProduct.Text[4];
+            //if (part == 'H')
+            //{
+            //    bool res = ntrsScanProcess(txtProduct.Text, pnlResult, "'EN2-LVT', 'MOTOR'", txtResultDetail);
+            //    if (!res) return;
+            //}
+            //else if (part == 'M')
+            //{
+            //    bool res1 = ntrsScanProcess(txtProduct.Text, pnlMover, "'EN2-LVT', 'MOTOR'", txtMoverDetail);
+            //    if (!res1) return;
+            //}
+            //if (!String.IsNullOrEmpty(txtProduct.Text) && txtProduct.TextLength == 8 && dup == 0)
+            //{
+            //    lblCounter.Text = (int.Parse(lblCounter.Text) + 1).ToString();
+            //}
+        }
+        private void txtProduct2_KeyDown(object sender, KeyEventArgs e)
+        {
+            //targetProcessCombined = "EN2-LVT,MOTOR";
+            if (e.KeyCode != Keys.Enter) return;
+            //model = lblModel.Text;
+            //headTableThisMonth = model.ToLower() + DateTime.Today.ToString("yyyyMM");
+            //headTableLastMonth = model.ToLower() + ((VBS.Right(DateTime.Today.ToString("yyyyMM"), 2) != "01") ?
+            //    (long.Parse(DateTime.Today.ToString("yyyyMM")) - 1).ToString() : (long.Parse(DateTime.Today.ToString("yyyy")) - 1).ToString() + "12");
+            //TfSQL tf = new TfSQL();
+            //try
+            //{
+            //    if (!tf.CheckTableExist(headTableLastMonth))
+            //    {
+            //        headTableLastMonth = headTableThisMonth;
+            //    }
+            //}
+            //catch (Exception ex)
+            //{
+            //    MessageBox.Show(ex.Message);
+            //}
+            if (txtProduct.Text == string.Empty) return;
+            if (txtProduct.ReadOnly == true) return;
+            //if (duplicate) return;
+            if (checkPositionBarcode(txtProduct2, 'M')&&txtProduct.Enabled==false)
             {
-                bool res1 = ntrsScanProcess(txtProduct.Text, pnlMover, "'EN2-LVT', 'MOTOR'", txtMoverDetail);
-                if (!res1) return;
-
+                linkBarcodeHosingAndMover();
+                //btnReset.Enabled = false;
+                noticeOK(pnlMover, txtProduct2, lblResult2);
+                txtAssembly.Text = txtProduct2.Text +" + "+ txtProduct.Text;
+                txtProduct.Enabled = true;
+                txtProduct2.Enabled = false;
+                txtProduct.Clear();
+                txtProduct2.Clear();
+                txtProduct.Select();
+                lblResult.Text="";
+                lblResult2.Text = "";
             }
-            //bool resMover = ntrsScanProcessMover(txtProduct.Text);
-
-            if (!String.IsNullOrEmpty(txtProduct.Text) && txtProduct.TextLength == 8 && dup == 0)
+            else
             {
-                lblCounter.Text = (int.Parse(lblCounter.Text) + 1).ToString();
-            }
+                noticeNG(pnlMover, txtProduct2);
+            };
         }
         public int dup = 0;
         // Check Duplicate barcode
@@ -260,21 +303,29 @@ namespace JigQuick
 
         private void btnReset_Click(object sender, EventArgs e)
         {
+            resetDefault(pnlResult, txtProduct);
+        }
+        private void btnReset2_Click(object sender, EventArgs e)
+        {
+            resetDefault(pnlMover, txtProduct2);
+        }
+        private void resetDefault(Panel pnlResult,TextBox txtProduct)
+        {
             string standByImagePath = System.Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory) + @"\JigQuickDesk\JigQuickApp\images\STANDBY.bmp";
             pnlResult.BackgroundImageLayout = ImageLayout.Zoom;
             pnlResult.BackgroundImage = System.Drawing.Image.FromFile(standByImagePath);
-            pnlMover.BackgroundImage = Image.FromFile(standByImagePath);
+            //pnlMover.BackgroundImage = Image.FromFile(standByImagePath);
             lblResult.ResetText();
             txtResultDetail.ResetText();
             txtProduct.ResetText();
-            txtProduct.ResetText();
             txtProduct.ReadOnly = false;
+            txtProduct.Enabled = true;
+
             txtProduct.BackColor = Color.White;
             txtProduct.BackColor = Color.White;
             txtProduct.Focus();
-            pnlMover.Visible = true;
+            //pnlMover.Visible = true;
         }
-
         public class TestResult
         {
             public string process { get; set; }
@@ -296,7 +347,6 @@ namespace JigQuick
             string log = string.Empty;
             string module = txtProduct.Text;
             string mdlShort = module;
-            char part = module[4];
             string scanTime = DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss");   
             switch (lblModel.Text)
             {
@@ -461,18 +511,18 @@ namespace JigQuick
         }
 
 
-        private void ImportDataToDB()
+        private void linkBarcodeHosingAndMover()
         {
             //  string no1 = "L" + cmbNo.Text;
-            string barcode1 = txtProduct.Text;
+            string barcode1 = txtProduct2.Text;
             string serno1 = '"' + barcode1 + '"';
-            string lot1 = '"' + "_" + DateTime.Now.ToString("yyyyMMdd") + '"';
+            string lot1 = '"' + txtProduct.Text + '"';
             string model1 = '"' + lblModel.Text + '"';
             string site1 = '"' + "NCVP" + '"';
             string factory1 = '"' + "2B" + '"';
             string line1 = '"' + "L1" + '"';
-            string process1 = '"' + "FINAL" + '"';
-            string inspect1 = '"' + "FINAL" + '"';
+            string process1 = '"' + "ASSEMBLY" + '"';
+            string inspect1 = '"' + "ASSEMBLY" + '"';
             string year1 = DateTime.Now.ToString("yyyy");
             string month1 = DateTime.Now.ToString("MM");
             string date1 = DateTime.Now.ToString("dd");
@@ -482,10 +532,38 @@ namespace JigQuick
             string judge1 = '"' + "0" + '"';
             string status1 = " ";
             string remark1 = " ";
-            string nameFile1 = DateTime.Now.ToString("yyyyMMddHHmmss") + ".LS12_003P12BFINAL.csv";
-            string outFile1 = @"\\192.168.145.7\ftpin\ftpin2\ " + nameFile1 + "";
+            string nameFile1 = DateTime.Now.ToString("yyyyMMddHHmmss") + ".BMD_0351ASSEMBLY.csv";
+            string outFile1 = @"\\192.168.145.7\ftpin\BMD_0351\ " + nameFile1 + "";
             System.IO.File.AppendAllText(outFile1, serno1 + "," + lot1 + "," + model1 + "," + site1 + "," + factory1 + "," + line1 + "," + process1 + "," + inspect1 + "," + inspectdate1 + "," + inspectime1 + "," + data1 + "," + judge1 + "," + status1 + "," + remark1);
 
         }
+        bool checkPositionBarcode(TextBox txtProduct, char c)
+        {
+            char part = txtProduct.Text[4];
+            if (part == c&& txtProduct.Text.Length==13)
+            {
+                return true;
+            }
+            else return false;
+        }
+        private void noticeNG(Panel pnl1,TextBox txtProduct, Label lblResult=null)
+        {
+            string ngImagePath = System.Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory) + @"\JigQuickDesk\JigQuickApp\images\NG_BEAR.png";
+            pnl1.BackgroundImageLayout = ImageLayout.Zoom;
+            pnl1.BackgroundImage = System.Drawing.Image.FromFile(ngImagePath);
+            txtProduct.ReadOnly = true;
+            txtProduct.BackColor = Color.Red;
+            soundAlarm();
+        }
+        private void noticeOK(Panel pnl1, TextBox txtProduct,Label lblResult)
+        {
+            lblResult.Text = "Barcode is OK"; lblResult.ForeColor = Color.Green;
+            string okImagePass = System.Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory) + @"\JigQuickDesk\JigQuickApp\images\OK_BEAR.png";
+            pnl1.BackgroundImageLayout = ImageLayout.Zoom;
+            pnl1.BackgroundImage = System.Drawing.Image.FromFile(okImagePass);
+            txtProduct.SelectAll();
+        }
+
+
     }
 }

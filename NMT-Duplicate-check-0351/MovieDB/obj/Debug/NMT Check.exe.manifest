@@ -55,14 +55,14 @@
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="NMT Check.exe" size="772608">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="NMT Check.exe" size="773632">
       <assemblyIdentity name="NMT Check" version="1.0.0.0" language="neutral" processorArchitecture="x86" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
-        <dsig:DigestValue>elWRoZhN9MNGm2uPmWF3R0NJruE=</dsig:DigestValue>
+        <dsig:DigestValue>CWF3Gl2iF1Er6T/Vk0Pf3RFvj94=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
