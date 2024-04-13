@@ -55,14 +55,14 @@
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="NMT Check.exe" size="773632">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="NMT Check.exe" size="775168">
       <assemblyIdentity name="NMT Check" version="1.0.0.0" language="neutral" processorArchitecture="x86" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
-        <dsig:DigestValue>CWF3Gl2iF1Er6T/Vk0Pf3RFvj94=</dsig:DigestValue>
+        <dsig:DigestValue>UImj4PlWnqtENwHj4QY30crhrNs=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
@@ -78,13 +78,13 @@
       </hash>
     </dependentAssembly>
   </dependency>
-  <file name="NMT Check.exe.config" size="1011">
+  <file name="NMT Check.exe.config" size="992">
     <hash>
       <dsig:Transforms>
         <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
       </dsig:Transforms>
       <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
-      <dsig:DigestValue>Jo801MRi5zD2VW2jwUVus9Iu85U=</dsig:DigestValue>
+      <dsig:DigestValue>vLa5YX0aX2h1N5bYQVO/xpjEgQQ=</dsig:DigestValue>
     </hash>
   </file>
   <file name="plainicon.com-47817-128px-fce.ico" size="99678">

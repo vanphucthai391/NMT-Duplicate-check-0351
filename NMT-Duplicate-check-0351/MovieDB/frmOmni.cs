@@ -20,7 +20,7 @@ namespace JigQuick
         #region Variables
         // コンフィグファイルと、出力テキストファイルは、デスクトップの指定のフォルダに保存する
         string appconfig = System.Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory) + @"\JigQuickDesk\JigQuickApp\info.ini";
-        string outPath = System.Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory) + @"\LS12 Log\";
+        string outPath = System.Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory) + @"\BMD_0351 Log\";
         //string outPath = System.Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory) + @"\JigQuickDesk\ConverterTarget\";
         //string outPath2 = System.Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory) + @"\JigQuickDesk\NtrsLog\";
         string InputData = String.Empty;
@@ -41,6 +41,7 @@ namespace JigQuick
         string headTablesubThisMonth = string.Empty;
         string headTablesubLastMonth = string.Empty;
         DataTable dtAllProcess;
+        StringBuilder linkBarcode= new StringBuilder();
 
         /// <summary>
         // application name that is given from caller application for displaying itself with version on login screen
@@ -59,20 +60,21 @@ namespace JigQuick
         private void frmInut_Load(object sender, EventArgs e)
         {
             txtProduct2.Enabled = false;
-            txtProduct.Select();
+            btnReset2.Enabled = false;
+            txtProduct1.Select();
             lblCounter.Visible = true;
             if (lblModel.Text == "BMD_0351")
             {
                 targetProcessCount = 2;
-                txtResultDetail.Visible = true;
+                txtResultDetail1.Visible = true;
                 //lbProcess.Text = "EN2 + AOI CASE RESULT";
                 //if (serialPort1.IsOpen) serialPort1.Close();
             }
             string standByImagePath = System.Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory) + @"\JigQuickDesk\JigQuickApp\images\STANDBY.bmp";
-            pnlResult.BackgroundImageLayout = ImageLayout.Zoom;
-            pnlResult.BackgroundImage = System.Drawing.Image.FromFile(standByImagePath);
-            pnlMover.BackgroundImageLayout = ImageLayout.Zoom;
-            pnlMover.BackgroundImage = System.Drawing.Image.FromFile(standByImagePath);
+            pnlResult1.BackgroundImageLayout = ImageLayout.Zoom;
+            pnlResult1.BackgroundImage = System.Drawing.Image.FromFile(standByImagePath);
+            pnlResult2.BackgroundImageLayout = ImageLayout.Zoom;
+            pnlResult2.BackgroundImage = System.Drawing.Image.FromFile(standByImagePath);
 
             TfSQL tf = new TfSQL();
             //tf.getComboBoxData("select distinct model from t_serno order by model asc", ref lblModel);
@@ -87,8 +89,6 @@ namespace JigQuick
                 version.Append("VERSION_");
                 version.Append(deploy.Major);
                 version.Append("_");
-                //version.Append(deploy.Minor);
-                //version.Append("_");
                 version.Append(deploy.Build);
                 version.Append("_");
                 version.Append(deploy.Revision);
@@ -102,7 +102,7 @@ namespace JigQuick
         {
             if (serialPort1.IsOpen) serialPort1.Close();
         }
-        private void txtProduct_KeyDown(object sender, KeyEventArgs e)
+        private void txtProduct1_KeyDown(object sender, KeyEventArgs e)
         {
             //targetProcessCombined = "EN2-LVT,MOTOR";
             if (e.KeyCode != Keys.Enter) return;
@@ -122,18 +122,23 @@ namespace JigQuick
             //{
             //    MessageBox.Show(ex.Message);
             //}
-            if (txtProduct.Text == string.Empty) return;
-            if (txtProduct.ReadOnly == true) return;
-            if (checkPositionBarcode(txtProduct, 'H'))
+            if (txtProduct1.Text == string.Empty) return;
+            if (txtProduct1.ReadOnly == true) return;
+
+            if (!checkPositionBarcode(txtProduct1, 'H'))
             {
-                noticeOK(pnlResult, txtProduct, lblResult);
-                txtProduct.Enabled = false;
-                txtProduct2.Enabled = true;
-                txtProduct2.Select();
+                ngBarcode(pnlResult1, txtProduct1);
+                return;
+
             }
-            else {
-                noticeNG(pnlResult, txtProduct);
-            };
+            okBarcode(pnlResult1);
+            txtProduct1.Enabled = false;
+            txtProduct2.Enabled = true;
+            btnReset2.Enabled = true;
+            linkBarcode=new StringBuilder();
+            linkBarcode.Append("Housing: " + txtProduct1.Text+ Environment.NewLine);
+            txtAssembly.Text = linkBarcode.ToString();
+            txtProduct2.Select();
 
             //if (duplicate) return;
             //char part = txtProduct.Text[4];
@@ -172,40 +177,40 @@ namespace JigQuick
             //{
             //    MessageBox.Show(ex.Message);
             //}
-            if (txtProduct.Text == string.Empty) return;
-            if (txtProduct.ReadOnly == true) return;
+            if (txtProduct2.Text == string.Empty) return;
+            if (txtProduct2.ReadOnly == true) return;
             //if (duplicate) return;
-            if (checkPositionBarcode(txtProduct2, 'M')&&txtProduct.Enabled==false)
+            if (!checkPositionBarcode(txtProduct2, 'M'))
             {
-                linkBarcodeHosingAndMover();
-                //btnReset.Enabled = false;
-                noticeOK(pnlMover, txtProduct2, lblResult2);
-                txtAssembly.Text = txtProduct2.Text +" + "+ txtProduct.Text;
-                txtProduct.Enabled = true;
-                txtProduct2.Enabled = false;
-                txtProduct.Clear();
-                txtProduct2.Clear();
-                txtProduct.Select();
-                lblResult.Text="";
-                lblResult2.Text = "";
+                ngBarcode(pnlResult2, txtProduct2);
+                return;
             }
-            else
-            {
-                noticeNG(pnlMover, txtProduct2);
-            };
+            //pushToServerLinkBarcode();
+            okBarcode(pnlResult2);
+            linkBarcode.Append("Mover: "+txtProduct2.Text);
+            txtAssembly.Text = linkBarcode.ToString();
+            writeLogLinkBarcode(txtProduct1.Text, txtProduct2.Text);
+            txtProduct1.Enabled = true;
+            txtProduct2.Enabled = false;
+            btnReset2.Enabled = false;
+            txtProduct1.Clear();
+            txtProduct2.Clear();
+            txtProduct1.Focus();
+            lblResult.Text = "";
+            lblResult2.Text = "";
         }
         public int dup = 0;
         // Check Duplicate barcode
         private void checkDuplicate()
         {
-            if (txtProduct.Text != String.Empty)// && txtProduct.Text.Length != 24)
+            if (txtProduct1.Text != String.Empty)// && txtProduct.Text.Length != 24)
             {
                 DateTime d = DateTime.Now;
                 TfSQL tf = new TfSQL();
-                string ser = tf.sqlExecuteScalarString("SELECT serial_no FROM t_serno_bmd_0351 WHERE serial_no = '" + txtProduct.Text + "'");
-                if (ser != txtProduct.Text)
+                string ser = tf.sqlExecuteScalarString("SELECT serial_no FROM t_serno_bmd_0351 WHERE serial_no = '" + txtProduct1.Text + "'");
+                if (ser != txtProduct1.Text)
                 {
-                    tf.sqlExecuteScalarString("INSERT INTO t_serno_bmd_0351(serial_no, regist_date, model) VALUES('" + txtProduct.Text + "','" + d + "','" + lblModel.Text + "')");
+                    tf.sqlExecuteScalarString("INSERT INTO t_serno_bmd_0351(serial_no, regist_date, model) VALUES('" + txtProduct1.Text + "','" + d + "','" + lblModel.Text + "')");
                     lblResult.Text = "Barcode is OK"; lblResult.ForeColor = Color.Green;
 
                     string okImagePath = System.Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory) + @"\JigQuickDesk\JigQuickApp\images\OK_BEAR.png";
@@ -218,9 +223,8 @@ namespace JigQuick
                     string count = tf.sqlExecuteScalarString("select count(serial_no) from t_serno_bmd_0351 where regist_date > '" + date1 + "' and regist_date <= '" + date + "' and model = '" + lblModel.Text.Replace("_", "-") + "'");
                     okCount = okCount + 1;
                     lblCounter.Text = okCount.ToString();
-
                 }
-                else if (ser == txtProduct.Text)
+                else if (ser == txtProduct1.Text)
                 {
                     lblResult.Text = "Duplicate Barcode";
                     lblResult.ForeColor = Color.Red;
@@ -228,12 +232,12 @@ namespace JigQuick
                     string ngImagePath = System.Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory) + @"\JigQuickDesk\JigQuickApp\images\NG_BEAR.png";
                     //string duplImagePath = System.Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory) + @"\JigQuickDesk\JigQuickApp\images\DUPLICATE.png";
                     dup = 1;
-                    pnlResult.BackgroundImageLayout = ImageLayout.Zoom;
-                    pnlResult.BackgroundImage = System.Drawing.Image.FromFile(ngImagePath);
+                    pnlResult1.BackgroundImageLayout = ImageLayout.Zoom;
+                    pnlResult1.BackgroundImage = System.Drawing.Image.FromFile(ngImagePath);
                     //pnlMover.BackgroundImageLayout = ImageLayout.Zoom;
                     //pnlMover.BackgroundImage = System.Drawing.Image.FromFile(duplImagePath);
-                    txtProduct.BackColor = Color.Red;
-                    txtProduct.ReadOnly = true;
+                    txtProduct1.BackColor = Color.Red;
+                    txtProduct1.ReadOnly = true;
                     soundAlarm();
                 }
             }
@@ -303,28 +307,25 @@ namespace JigQuick
 
         private void btnReset_Click(object sender, EventArgs e)
         {
-            resetDefault(pnlResult, txtProduct);
+            resetBarcodeDefault(pnlResult1, txtProduct1);
         }
         private void btnReset2_Click(object sender, EventArgs e)
         {
-            resetDefault(pnlMover, txtProduct2);
+            resetBarcodeDefault(pnlResult2, txtProduct2);
         }
-        private void resetDefault(Panel pnlResult,TextBox txtProduct)
+        private void resetBarcodeDefault(Panel pnlResult,TextBox txtProduct)
         {
             string standByImagePath = System.Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory) + @"\JigQuickDesk\JigQuickApp\images\STANDBY.bmp";
             pnlResult.BackgroundImageLayout = ImageLayout.Zoom;
             pnlResult.BackgroundImage = System.Drawing.Image.FromFile(standByImagePath);
-            //pnlMover.BackgroundImage = Image.FromFile(standByImagePath);
             lblResult.ResetText();
-            txtResultDetail.ResetText();
+            txtResultDetail1.ResetText();
             txtProduct.ResetText();
             txtProduct.ReadOnly = false;
             txtProduct.Enabled = true;
-
             txtProduct.BackColor = Color.White;
             txtProduct.BackColor = Color.White;
             txtProduct.Focus();
-            //pnlMover.Visible = true;
         }
         public class TestResult
         {
@@ -340,12 +341,12 @@ namespace JigQuick
 
         public string sql1;
 
-        private bool ntrsScanProcess(string id,Panel pnl1, string processSql1,TextBox txtResultDetail)
+        private bool ntrsScanProcess(string id,Panel pnlResult, string processSql1,TextBox txtProduct, TextBox txtResultDetail)
         {
             TfSQL tf = new TfSQL();
             DataTable dt = new DataTable();
             string log = string.Empty;
-            string module = txtProduct.Text;
+            string module = txtProduct1.Text;
             string mdlShort = module;
             string scanTime = DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss");   
             switch (lblModel.Text)
@@ -431,23 +432,14 @@ namespace JigQuick
             bool result = false;
             if (passResults.Count == targetProcessCount)
             {
-                string okImagePass = System.Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory) + @"\JigQuickDesk\JigQuickApp\images\OK_BEAR.png";
-                pnl1.BackgroundImageLayout = ImageLayout.Zoom;
-                pnl1.BackgroundImage = System.Drawing.Image.FromFile(okImagePass);
                 checkDuplicate();
+                okBarcode(pnlResult1);
                 result = true;
-                txtProduct.SelectAll();
             }
             else
             {
-                string ngImagePath = System.Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory) + @"\JigQuickDesk\JigQuickApp\images\NG_BEAR.png";
-                pnl1.BackgroundImageLayout = ImageLayout.Zoom;
-                pnl1.BackgroundImage = System.Drawing.Image.FromFile(ngImagePath);
-                //pnlRetest.BackgroundImageLayout = ImageLayout.Zoom;
-                //pnlRetest.BackgroundImage = System.Drawing.Image.FromFile(ngImagePath);
+                ngBarcode(pnlResult, txtProduct);
                 result = true;
-                txtProduct.ReadOnly = true;
-                txtProduct.BackColor = Color.Red;
                 soundAlarm();
             }
             log = Environment.NewLine + scanTime + "," + module + "," + displayAll;
@@ -473,9 +465,32 @@ namespace JigQuick
             return result;
 
         }
+        private void writeLogLinkBarcode(string housing, string mover)
+        {
+            string scanTime = DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss");
+            string log = Environment.NewLine + scanTime + "," + housing + "," + mover;
+            try
+            {
+                string outFile = outPath + DateTime.Today.ToString("yyyyMMdd") + ".txt";
+                if (System.IO.File.Exists(outFile))
+                {
+                    System.IO.File.AppendAllText(outFile, log, System.Text.Encoding.GetEncoding("UTF-8"));
+                }
+                else
+                {
+                    string header = DateTime.Today.ToString("yyyy/MM/dd") + " " + model + " " + "LINK BARCODE DETAIL" +
+                    Environment.NewLine + "SCAN TIME, HOUSING, MOVER";
+                    System.IO.File.AppendAllText(outFile, header + log, System.Text.Encoding.GetEncoding("UTF-8"));
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+        }
         public void transProduct(string serial)
         {
-            txtProduct.Text = serial;
+            txtProduct1.Text = serial;
         }
         private void CkbModel_CheckedChanged(object sender, EventArgs e)
         {
@@ -511,12 +526,12 @@ namespace JigQuick
         }
 
 
-        private void linkBarcodeHosingAndMover()
+        private void pushToServerLinkBarcode()
         {
             //  string no1 = "L" + cmbNo.Text;
             string barcode1 = txtProduct2.Text;
             string serno1 = '"' + barcode1 + '"';
-            string lot1 = '"' + txtProduct.Text + '"';
+            string lot1 = '"' + txtProduct1.Text + '"';
             string model1 = '"' + lblModel.Text + '"';
             string site1 = '"' + "NCVP" + '"';
             string factory1 = '"' + "2B" + '"';
@@ -546,24 +561,20 @@ namespace JigQuick
             }
             else return false;
         }
-        private void noticeNG(Panel pnl1,TextBox txtProduct, Label lblResult=null)
+        private void ngBarcode(Panel pnlResult, TextBox txtProduct)
         {
             string ngImagePath = System.Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory) + @"\JigQuickDesk\JigQuickApp\images\NG_BEAR.png";
-            pnl1.BackgroundImageLayout = ImageLayout.Zoom;
-            pnl1.BackgroundImage = System.Drawing.Image.FromFile(ngImagePath);
+            pnlResult.BackgroundImageLayout = ImageLayout.Zoom;
+            pnlResult.BackgroundImage = System.Drawing.Image.FromFile(ngImagePath);
             txtProduct.ReadOnly = true;
             txtProduct.BackColor = Color.Red;
             soundAlarm();
         }
-        private void noticeOK(Panel pnl1, TextBox txtProduct,Label lblResult)
+        private void okBarcode(Panel pnlResult)
         {
-            lblResult.Text = "Barcode is OK"; lblResult.ForeColor = Color.Green;
             string okImagePass = System.Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory) + @"\JigQuickDesk\JigQuickApp\images\OK_BEAR.png";
-            pnl1.BackgroundImageLayout = ImageLayout.Zoom;
-            pnl1.BackgroundImage = System.Drawing.Image.FromFile(okImagePass);
-            txtProduct.SelectAll();
+            pnlResult.BackgroundImageLayout = ImageLayout.Zoom;
+            pnlResult.BackgroundImage = System.Drawing.Image.FromFile(okImagePass);
         }
-
-
     }
 }
