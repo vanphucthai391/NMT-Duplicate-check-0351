@@ -304,3 +304,20 @@ D:\thaivanphuc\NMT-Duplicate-check-0351-main\NMT-Duplicate-check-0351-main\NMT-D
 D:\thaivanphuc\NMT-Duplicate-check-0351-main\NMT-Duplicate-check-0351-main\NMT-Duplicate-check-0351\MovieDB\obj\Debug\JigQuick.csproj.CopyComplete
 D:\thaivanphuc\NMT-Duplicate-check-0351-main\NMT-Duplicate-check-0351-main\NMT-Duplicate-check-0351\MovieDB\obj\Debug\NMT Check.exe
 D:\thaivanphuc\NMT-Duplicate-check-0351-main\NMT-Duplicate-check-0351-main\NMT-Duplicate-check-0351\MovieDB\obj\Debug\NMT Check.pdb
+D:\thaivanphuc\NMT-Duplicate-check-0351\NMT-Duplicate-check-0351\MovieDB\bin\Debug\NMT Check.exe.config
+D:\thaivanphuc\NMT-Duplicate-check-0351\NMT-Duplicate-check-0351\MovieDB\bin\Debug\NMT Check.exe.manifest
+D:\thaivanphuc\NMT-Duplicate-check-0351\NMT-Duplicate-check-0351\MovieDB\bin\Debug\NMT Check.application
+D:\thaivanphuc\NMT-Duplicate-check-0351\NMT-Duplicate-check-0351\MovieDB\bin\Debug\NMT Check.exe
+D:\thaivanphuc\NMT-Duplicate-check-0351\NMT-Duplicate-check-0351\MovieDB\bin\Debug\NMT Check.pdb
+D:\thaivanphuc\NMT-Duplicate-check-0351\NMT-Duplicate-check-0351\MovieDB\bin\Debug\Mono.Security.dll
+D:\thaivanphuc\NMT-Duplicate-check-0351\NMT-Duplicate-check-0351\MovieDB\obj\Debug\JigQuick.csprojAssemblyReference.cache
+D:\thaivanphuc\NMT-Duplicate-check-0351\NMT-Duplicate-check-0351\MovieDB\obj\Debug\JigQuick.frmOmni.resources
+D:\thaivanphuc\NMT-Duplicate-check-0351\NMT-Duplicate-check-0351\MovieDB\obj\Debug\JigQuick.Properties.Resources.resources
+D:\thaivanphuc\NMT-Duplicate-check-0351\NMT-Duplicate-check-0351\MovieDB\obj\Debug\JigQuick.csproj.GenerateResource.cache
+D:\thaivanphuc\NMT-Duplicate-check-0351\NMT-Duplicate-check-0351\MovieDB\obj\Debug\JigQuick.csproj.CoreCompileInputs.cache
+D:\thaivanphuc\NMT-Duplicate-check-0351\NMT-Duplicate-check-0351\MovieDB\obj\Debug\NMT Check.TrustInfo.xml
+D:\thaivanphuc\NMT-Duplicate-check-0351\NMT-Duplicate-check-0351\MovieDB\obj\Debug\NMT Check.exe.manifest
+D:\thaivanphuc\NMT-Duplicate-check-0351\NMT-Duplicate-check-0351\MovieDB\obj\Debug\NMT Check.application
+D:\thaivanphuc\NMT-Duplicate-check-0351\NMT-Duplicate-check-0351\MovieDB\obj\Debug\JigQuick.csproj.CopyComplete
+D:\thaivanphuc\NMT-Duplicate-check-0351\NMT-Duplicate-check-0351\MovieDB\obj\Debug\NMT Check.exe
+D:\thaivanphuc\NMT-Duplicate-check-0351\NMT-Duplicate-check-0351\MovieDB\obj\Debug\NMT Check.pdb

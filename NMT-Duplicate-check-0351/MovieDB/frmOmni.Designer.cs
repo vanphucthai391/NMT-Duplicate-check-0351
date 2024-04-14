@@ -192,6 +192,7 @@ namespace JigQuick
             this.txtAssembly.Margin = new System.Windows.Forms.Padding(4);
             this.txtAssembly.Multiline = true;
             this.txtAssembly.Name = "txtAssembly";
+            this.txtAssembly.ReadOnly = true;
             this.txtAssembly.Size = new System.Drawing.Size(489, 132);
             this.txtAssembly.TabIndex = 76;
             // 
